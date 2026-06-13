@@ -10,8 +10,9 @@ class ScanInitiateRequest(BaseModel):
 class ScanStatusResponse(BaseModel):
     taskId: str
     status: str
-    currentStep: Optional[str]
+    currentStep: Optional[str] = None
     progress: int
+    startedAt: Optional[str] = None
 
 
 class FindingsItem(BaseModel):

@@ -13,3 +13,26 @@ class TargetNotAllowedError(ReconError):
 
 class ReconServiceError(ReconError):
     pass
+
+
+class DomainReconError(ReconError):
+    """Base exception for domain reconnaissance subsystem."""
+    pass
+
+
+class DnsLookupError(DomainReconError):
+    def __init__(self, message: str, retryable: bool = True):
+        super().__init__(message)
+        self.retryable = retryable
+
+
+class WhoisLookupError(DomainReconError):
+    pass
+
+
+class SslInspectionError(DomainReconError):
+    pass
+
+
+class DomainReconUnexpectedError(DomainReconError):
+    pass

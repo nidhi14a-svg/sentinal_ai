@@ -4,6 +4,7 @@ from backend.sentinel.scanner.services import ScannerService
 
 def test_execute_dry_run_returns_commands(monkeypatch):
     service = ScannerService(ScannerConfig(nikto_path="nikto"))
+    monkeypatch.setattr(service.recon_service, "is_allowed_target", lambda domain: True)
     result = service.execute("example.com", "quick", {"initiated_by": "person_a"}, dry_run=True)
 
     assert result["dry_run"] is True
@@ -12,8 +13,9 @@ def test_execute_dry_run_returns_commands(monkeypatch):
     assert any(raw.get("source") == "zap" for raw in result["raw_findings"])
 
 
-def test_execute_verification_skips_scans():
+def test_execute_verification_skips_scans(monkeypatch):
     service = ScannerService(ScannerConfig())
+    monkeypatch.setattr(service.recon_service, "is_allowed_target", lambda domain: True)
     result = service.execute("example.com", "quick", {"initiated_by": "person_a"}, verification=True)
 
     assert result["verification"] is True

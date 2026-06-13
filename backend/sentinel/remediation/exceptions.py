@@ -9,3 +9,11 @@ class RemediationApprovalError(RemediationError):
 
 class RemediationExecutionError(RemediationError):
     pass
+
+
+class UnsupportedRemediationError(RemediationError):
+    pass
+
+
+class RemediationTargetNotAllowedError(RemediationError):
+    pass
