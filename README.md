@@ -280,7 +280,7 @@ The architecture isolates scanners, host verifiers, and remediation engines behi
 
 ## 👥 Contributors
 
-* **SecOps Engineer (Person A)** - Core scanning, configuration editing, system validation integration, and test lifecycle execution.
+* **SecOps Engineer (Person A) / Nidhi Singh** - Core scanning, configuration editing, system validation integration, and test lifecycle execution.
 
 ---
 
