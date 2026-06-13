@@ -1,0 +1,65 @@
+{
+  "scan_id": "00000000-0000-0000-0000-000000000000",
+  "domain": "example.com",
+  "scan_profile": "quick",
+  "metadata": {
+    "initiated_by": "person_a",
+    "session_id": "sample-session"
+  },
+  "raw_findings": [
+    {
+      "source": "zap",
+      "scan_id": "1",
+      "alerts": [
+        {
+          "name": "Missing security header",
+          "risk": "Medium",
+          "description": "The X-Frame-Options header is missing.",
+          "solution": "Add X-Frame-Options header to the response."
+        }
+      ]
+    },
+    {
+      "source": "nikto",
+      "command": "/usr/bin/nikto -host http://example.com",
+      "exit_code": 0,
+      "stdout": "+ Server: nginx\n+ Uncommon header 'X-Powered-By' found\n",
+      "stderr": ""
+    }
+  ],
+  "normalized_findings": [
+    {
+      "finding_id": "zap-1",
+      "title": "Missing security header",
+      "severity": "Medium",
+      "description": "The X-Frame-Options header is missing.",
+      "source": "ZAP",
+      "remediation_hint": "Add X-Frame-Options header to the response."
+    },
+    {
+      "finding_id": "nikto-1",
+      "title": " Server: nginx",
+      "severity": "Medium",
+      "description": "Server: nginx",
+      "source": "Nikto",
+      "remediation_hint": "Review the Nikto finding and address web server misconfiguration."
+    },
+    {
+      "finding_id": "nikto-2",
+      "title": " Uncommon header 'X-Powered-By' found",
+      "severity": "Medium",
+      "description": "Uncommon header 'X-Powered-By' found",
+      "source": "Nikto",
+      "remediation_hint": "Review the Nikto finding and address web server misconfiguration."
+    }
+  ],
+  "scanner_logs": [
+    {
+      "level": "info",
+      "message": "Sample scanner output created."
+    }
+  ],
+  "completed_at": "2026-01-01T00:00:00Z",
+  "dry_run": false,
+  "verification": false
+}
