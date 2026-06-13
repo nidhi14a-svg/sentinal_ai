@@ -70,3 +70,19 @@
 - Claude API availability: mitigate with retry logic and fallback failure states.
 - Scanner engine integration: isolate ZAP and Nikto adapters to avoid cross-impact.
 - Report generation: ensure WeasyPrint environment requirements are captured in Docker configuration.
+
+---
+
+## Remediation Audit Trail & Rollback Validation
+
+### 1. Audit Trail Structure
+Remediation actions produce a JSON log in `backend/sentinel/remediation/remediation_audit.log` (or path configured via environment/config). Entries strictly adhere to:
+- `timestamp`: UTC ISO8601 string.
+- `action`: Remediation action type (e.g. `apply_fix`).
+- `recommendationId`: Mapping back to the generated recommendation (e.g. `r-001`).
+- `status`: Completion status (`applied`, `failed`, `verification`, or `dry_run`).
+
+### 2. Rollback Readiness
+- Configuration modifications (e.g. Nginx security headers and TLS/SSL ciphers hardening) preserve backups or track changes.
+- Rollback can be performed using standard VCS (Git tracking) on local sample target configuration configurations, or by executing a rollback CLI action.
+- The remediation agent performs syntax validation before applying Nginx configuration changes to prevent service failures.
