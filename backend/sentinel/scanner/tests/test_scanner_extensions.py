@@ -80,6 +80,7 @@ def test_nikto_adapter_missing_binary(monkeypatch):
 def test_sslyze_adapter_missing_binary(monkeypatch):
     adapter = SslYzeAdapter()
     monkeypatch.setattr("shutil.which", lambda p: False)
+    monkeypatch.setattr(adapter, "_has_sslyze_module", lambda: False)
     
     with pytest.raises(SslYzeError):
         adapter.run("example.com")

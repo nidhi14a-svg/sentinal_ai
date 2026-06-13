@@ -58,6 +58,13 @@ Sentinel AI is a modular security audit platform built for autonomous reconnaiss
 - All scanner actions are logged and verified.
 - AI-generated remediation is treated as advisory until user confirmation.
 
+## Safe Demo Launch Configuration & Fail-Safes
+
+To prevent accidental scans or configuration modifications on unauthorized environments during the hackathon, the following fail-safes are enforced:
+1. **Allowlist Scope Hardening**: All API request entries validate domains against `sample_target/allowlist.txt`. If the domain is missing or invalid, the operation halts immediately with `TargetNotAllowedError` (HTTP 403).
+2. **Scan Verification Mode**: When executing scans in audit or demo mode, scanners run in verification mode which simulates findings and verifies ports without triggering destructive network payloads.
+3. **Remediation Guardrail**: The remediation executor validates the user confirmation within `approvalContext` before execution. If validation fails, it throws a `RemediationApprovalError` and halts safely.
+
 ## Folder Explanations
 
 - `docs/` - Architecture, design, process, and team documentation.

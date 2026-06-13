@@ -13,10 +13,13 @@ dependencies = [
     "dnspython>=2.4.0",
     "python-whois>=0.8.0",
     "paramiko>=3.5.0",
-    "sslyze>=6.11.0",
+    "sslyze>=6.0.0",
     "pytest>=8.4.0"
 ]
 
 [build-system]
 requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["backend*"]

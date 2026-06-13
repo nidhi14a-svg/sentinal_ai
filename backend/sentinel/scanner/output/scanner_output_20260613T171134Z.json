@@ -1,0 +1,75 @@
+{
+  "scan_id": "532e8d39-34e3-400e-8b63-65e4f865ac04",
+  "domain": "example.team-owned-site.com",
+  "scan_profile": "full-scan",
+  "metadata": {
+    "triggeredBy": "test-post-remediation"
+  },
+  "raw_findings": [
+    {
+      "source": "zap",
+      "error": "ZAP API request failed: HTTPConnectionPool(host='localhost', port=8080): Max retries exceeded with url: /JSON/ascan/action/scan/?url=http://example.team-owned-site.com&recurse=true (Caused by NewConnectionError(\"HTTPConnection(host='localhost', port=8080): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))"
+    },
+    {
+      "source": "nikto",
+      "error": "Nikto binary not found at '/usr/bin/nikto'"
+    },
+    {
+      "source": "ssl",
+      "command": "C:\\Users\\nidhi\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe -m sslyze --regular example.team-owned-site.com:443",
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "usage: sslyze [-h] [--update_trust_stores] [--cert CERTIFICATE_FILE]\n              [--key KEY_FILE] [--keyform KEY_FORMAT] [--pass PASSPHRASE]\n              [--json_out JSON_FILE] [--targets_in TARGET_FILE] [--quiet]\n              [--slow_connection] [--https_tunnel PROXY_SETTINGS]\n              [--starttls PROTOCOL] [--xmpp_to HOSTNAME]\n              [--sni SERVER_NAME_INDICATION] [--http_headers] [--tlsv1]\n              [--heartbleed] [--openssl_ccs] [--compression] [--resum]\n              [--resum_attempts RESUM_ATTEMPTS] [--tlsv1_1] [--sslv3] [--ems]\n              [--reneg] [--fallback] [--certinfo]\n              [--certinfo_ca_file CERTINFO_CA_FILE] [--elliptic_curves]\n              [--early_data] [--tlsv1_3] [--sslv2] [--robot] [--tlsv1_2]\n              [--custom_tls_config CUSTOM_TLS_CONFIG]\n              [--mozilla_config {modern,intermediate,old,disable}]\n              [target ...]\nsslyze: error: unrecognized arguments: --regular"
+    }
+  ],
+  "normalized_findings": [],
+  "scanner_logs": [
+    {
+      "level": "info",
+      "message": "Starting ZAP scan."
+    },
+    {
+      "level": "info",
+      "message": "Starting Nikto scan."
+    },
+    {
+      "level": "info",
+      "message": "Starting SSL scan."
+    }
+  ],
+  "completed_at": "2026-06-13T17:11:23.779548Z",
+  "dry_run": false,
+  "verification": false,
+  "scanId": "532e8d39-34e3-400e-8b63-65e4f865ac04",
+  "scanProfile": "full-scan",
+  "rawFindings": {
+    "zap": [
+      {
+        "source": "zap",
+        "error": "ZAP API request failed: HTTPConnectionPool(host='localhost', port=8080): Max retries exceeded with url: /JSON/ascan/action/scan/?url=http://example.team-owned-site.com&recurse=true (Caused by NewConnectionError(\"HTTPConnection(host='localhost', port=8080): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))"
+      }
+    ],
+    "nikto": [
+      {
+        "source": "nikto",
+        "error": "Nikto binary not found at '/usr/bin/nikto'"
+      }
+    ],
+    "ssl": [
+      {
+        "source": "ssl",
+        "command": "C:\\Users\\nidhi\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe -m sslyze --regular example.team-owned-site.com:443",
+        "exit_code": 2,
+        "stdout": "",
+        "stderr": "usage: sslyze [-h] [--update_trust_stores] [--cert CERTIFICATE_FILE]\n              [--key KEY_FILE] [--keyform KEY_FORMAT] [--pass PASSPHRASE]\n              [--json_out JSON_FILE] [--targets_in TARGET_FILE] [--quiet]\n              [--slow_connection] [--https_tunnel PROXY_SETTINGS]\n              [--starttls PROTOCOL] [--xmpp_to HOSTNAME]\n              [--sni SERVER_NAME_INDICATION] [--http_headers] [--tlsv1]\n              [--heartbleed] [--openssl_ccs] [--compression] [--resum]\n              [--resum_attempts RESUM_ATTEMPTS] [--tlsv1_1] [--sslv3] [--ems]\n              [--reneg] [--fallback] [--certinfo]\n              [--certinfo_ca_file CERTINFO_CA_FILE] [--elliptic_curves]\n              [--early_data] [--tlsv1_3] [--sslv2] [--robot] [--tlsv1_2]\n              [--custom_tls_config CUSTOM_TLS_CONFIG]\n              [--mozilla_config {modern,intermediate,old,disable}]\n              [target ...]\nsslyze: error: unrecognized arguments: --regular"
+      }
+    ]
+  },
+  "normalizedFindings": [],
+  "scannerLogs": [
+    "Starting ZAP scan.",
+    "Starting Nikto scan.",
+    "Starting SSL scan."
+  ],
+  "completedAt": "2026-06-13T17:11:23.779548Z"
+}

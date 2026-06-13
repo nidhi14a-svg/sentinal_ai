@@ -125,14 +125,26 @@ class RemediationService(RemediationInterface):
                     "add_header X-Frame-Options \"DENY\";",
                     "add_header Referrer-Policy \"no-referrer\";",
                     "add_header Strict-Transport-Security \"max-age=31536000; includeSubDomains\" always;",
+                    "add_header Content-Security-Policy \"default-src 'self';\";",
                 ]
                 if "add_header X-Content-Type-Options \"nosniff\";" not in updated:
                     updated = updated.replace("server {", "server {\n    " + "\n    ".join(headers))
-                    actions.append({
-                        "recommendationId": rec_id,
-                        "status": "dry_run" if dry_run else "applied",
-                        "details": "Nginx security headers added."
-                    })
+                
+                # Remove X-Powered-By exposure
+                if "add_header X-Powered-By" in updated:
+                    import re
+                    updated = re.sub(r'add_header\s+X-Powered-By\s+[^;]+;', '', updated)
+                # Disable server_tokens
+                if "server_tokens on;" in updated:
+                    updated = updated.replace("server_tokens on;", "server_tokens off;")
+                elif "server_tokens off;" not in updated:
+                    updated = updated.replace("server {", "server {\n        server_tokens off;")
+
+                actions.append({
+                    "recommendationId": rec_id,
+                    "status": "dry_run" if dry_run else "applied",
+                    "details": "Nginx security headers added."
+                })
             elif rec_type == "tls_hardening":
                 if "ssl_protocols TLSv1 TLSv1.1 TLSv1.2;" in updated:
                     updated = updated.replace(

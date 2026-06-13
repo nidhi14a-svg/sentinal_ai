@@ -183,11 +183,26 @@ class ReconService(ReconInterface):
                 continue
         return services
 
+    def _has_sslyze_module(self) -> bool:
+        try:
+            import sslyze
+            return True
+        except ImportError:
+            return False
+
     def run_sslyze_inspection(self, domain: str) -> dict[str, Any]:
-        if not shutil.which("sslyze"):
+        sslyze_path = shutil.which("sslyze")
+        has_module = self._has_sslyze_module()
+
+        if not sslyze_path and not has_module:
             return {"note": "sslyze CLI not available on PATH"}
 
-        command = ["sslyze", "--regular", f"{domain}:443"]
+        import sys
+        if has_module:
+            command = [sys.executable, "-m", "sslyze", "--regular", f"{domain}:443"]
+        else:
+            command = ["sslyze", "--regular", f"{domain}:443"]
+
         try:
             result = subprocess.run(command, capture_output=True, text=True, check=False, timeout=self.config.whois_timeout_seconds)
             return {
