@@ -1,0 +1,122 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --grid-line: rgba(255, 26, 60, 0.06);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  background-color: #05050a;
+  color: #e8e8f0;
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+  overflow-x: hidden;
+}
+
+/* ---------- Glass panel ---------- */
+.glass-panel {
+  background: rgba(15, 15, 26, 0.55);
+  border: 1px solid rgba(255, 26, 60, 0.15);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 14px;
+}
+
+.glass-panel-hover {
+  transition: all 0.3s ease;
+}
+
+.glass-panel-hover:hover {
+  border-color: rgba(255, 26, 60, 0.4);
+  box-shadow: 0 0 25px rgba(255, 26, 60, 0.25);
+}
+
+/* ---------- Background grid ---------- */
+.bg-grid {
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* ---------- Glow text ---------- */
+.text-glow-red {
+  text-shadow: 0 0 10px rgba(255, 26, 60, 0.7), 0 0 30px rgba(255, 26, 60, 0.35);
+}
+
+.text-glow-cyan {
+  text-shadow: 0 0 10px rgba(0, 229, 255, 0.7), 0 0 30px rgba(0, 229, 255, 0.3);
+}
+
+/* ---------- Scanline overlay ---------- */
+.scanline-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.scanline-overlay::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255, 26, 60, 0.6), transparent);
+  animation: scanline 3s linear infinite;
+}
+
+/* ---------- Terminal text ---------- */
+.terminal-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+}
+
+/* ---------- Scrollbar ---------- */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0a12;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 26, 60, 0.4);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 26, 60, 0.7);
+}
+
+/* ---------- Selection ---------- */
+::selection {
+  background: rgba(255, 26, 60, 0.35);
+  color: #fff;
+}
+
+/* ---------- Focus ring ---------- */
+:focus-visible {
+  outline: 2px solid rgba(255, 26, 60, 0.6);
+  outline-offset: 2px;
+}
+
+#coreGrad {
+  --gradient-start: #ff1a3c;
+  --gradient-end: #9d4dff;
+  background: radial-gradient(circle at center, var(--gradient-start), var(--gradient-end));
+}
