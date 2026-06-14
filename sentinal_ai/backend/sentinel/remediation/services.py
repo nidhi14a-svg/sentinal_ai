@@ -291,6 +291,12 @@ class RemediationService(RemediationInterface):
         dry_run: bool = False,
         verification: bool = False,
     ) -> dict[str, Any]:
+        # Validate recommendation types
+        for rec in recommendations:
+            rec_type = rec.get("type") or ""
+            if rec_type not in ("header_hardening", "tls_hardening", "remote_command"):
+                raise UnsupportedRemediationError(f"Unsupported recommendation type: {rec_type}")
+
         audit_trail: list[dict[str, Any]] = []
         remediation_actions: list[dict[str, Any]] = []
         status = "completed"

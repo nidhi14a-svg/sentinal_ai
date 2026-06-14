@@ -58,6 +58,7 @@ class ReportingService(ReportingInterface):
         # Attempt to render PDF if WeasyPrint is available
         pdf_path = None
         try:
+          # pyrefly: ignore [missing-import]
           from weasyprint import HTML
 
           pdf_name = f"report-{task_id}.pdf"

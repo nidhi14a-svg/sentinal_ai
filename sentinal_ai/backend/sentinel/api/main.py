@@ -59,7 +59,10 @@ app.include_router(scan.router, prefix="/api/scan", tags=["scan"])
 app.include_router(report.router, prefix="/api/report", tags=["report"])
 
 
-reports_dir = os.path.join(os.path.dirname(__file__), "..", "..", "reports")
+reports_dir = os.getenv(
+    "REPORTS_PATH",
+    os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", "reports"))
+)
 os.makedirs(reports_dir, exist_ok=True)
 app.mount("/reports", StaticFiles(directory=reports_dir), name="reports")
 
