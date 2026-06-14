@@ -8,8 +8,8 @@ import GlowButton from '../../components/common/GlowButton';
 import GlassCard from '../../components/common/GlassCard';
 import ProgressLine from '../../components/common/ProgressLine';
 
-const Remediation = () => {
-    const { setCurrentSection, remediationStatus, setVerificationData, scanData, targetDomain, setReportData } = useDashboard();
+const Remediation = ({ onProceed }) => {
+    const { remediationStatus, setVerificationData, scanData, targetDomain, setReportData } = useDashboard();
     const [isActive, setIsActive] = useState(false);
     const [currentStep, setCurrentStep] = useState(1);
     const [completedSteps, setCompletedSteps] = useState([]);
@@ -148,7 +148,7 @@ const Remediation = () => {
         setVerificationData(verificationResults);
         
         // Ensure report data trigger happens, though we'll actually fetch the real report later
-        setCurrentSection('verification');
+        onProceed?.();
     };
 
     const progress = (completedSteps.length / steps.length) * 100;

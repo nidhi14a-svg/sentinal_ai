@@ -111,8 +111,8 @@ const ParticleField3D = () => {
 };
 
 // Main Verification Component
-const Verification = () => {
-    const { setCurrentSection, verificationData, setReportData, targetDomain } = useDashboard();
+const Verification = ({ onProceed }) => {
+    const { verificationData, setReportData, targetDomain } = useDashboard();
     const [afterScoreAnimated, setAfterScoreAnimated] = useState(false);
     const [showConfetti, setShowConfetti] = useState(false);
     const [show3D, setShow3D] = useState(true);
@@ -143,7 +143,7 @@ const Verification = () => {
             verifiedAt: new Date().toLocaleTimeString(),
         };
         setReportData(report);
-        setCurrentSection('forensicReport');
+        onProceed?.();
     };
 
     // Confetti particles

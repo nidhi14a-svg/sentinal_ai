@@ -7,8 +7,8 @@ import VulnerabilityCard from './VulnerabilityCard';
 import GlowButton from '../../components/common/GlowButton';
 import GlassCard from '../../components/common/GlassCard';
 
-const AIAnalysis = () => {
-    const { setCurrentSection, aiAnalysis, setRemediationStatus, targetDomain } = useDashboard();
+const AIAnalysis = ({ onProceed }) => {
+    const { aiAnalysis, setRemediationStatus, targetDomain } = useDashboard();
     const [expandedId, setExpandedId] = useState(null);
     const [realAnalysis, setRealAnalysis] = useState(null);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -107,7 +107,7 @@ const AIAnalysis = () => {
             status: 'pending',
         }));
         setRemediationStatus(remediationPlan);
-        setCurrentSection('remediation');
+        onProceed?.();
     };
 
     const stats = [

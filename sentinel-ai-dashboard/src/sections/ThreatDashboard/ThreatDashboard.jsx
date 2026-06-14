@@ -8,8 +8,8 @@ import GlassCard from '../../components/common/GlassCard';
 import SeverityBadge from '../../components/common/SeverityBadge';
 import GlowButton from '../../components/common/GlowButton';
 
-const ThreatDashboard = () => {
-    const { setCurrentSection, scanData, setAiAnalysis, targetDomain } = useDashboard();
+const ThreatDashboard = ({ onProceed }) => {
+    const { scanData, setAiAnalysis, targetDomain } = useDashboard();
     const [selectedVuln, setSelectedVuln] = useState(null);
     const [resolvedCount] = useState(0); // Will be updated after remediation
 
@@ -61,7 +61,7 @@ const ThreatDashboard = () => {
             originalFindings: scanData?.originalFindings || null,
         };
         setAiAnalysis(analysisData);
-        setCurrentSection('aiAnalysis');
+        onProceed?.();
     };
 
     const cardVariants = {

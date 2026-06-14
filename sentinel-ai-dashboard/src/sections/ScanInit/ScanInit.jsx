@@ -8,8 +8,8 @@ import TerminalLog from '../../components/common/TerminalLog';
 import GlowButton from '../../components/common/GlowButton';
 import GlassCard from '../../components/common/GlassCard';
 
-const ScanInit = () => {
-    const { setCurrentSection, setScanData, setScanProgress, targetDomain } = useDashboard();
+const ScanInit = ({ onComplete }) => {
+    const { setScanData, setScanProgress, targetDomain } = useDashboard();
     const [activeStep, setActiveStep] = useState(0);
     const [completedSteps, setCompletedSteps] = useState([]);
     const [stepTimings, setStepTimings] = useState({});
@@ -121,7 +121,7 @@ const ScanInit = () => {
             };
             setScanData(mockScanData);
         }
-        setCurrentSection('threatDashboard');
+        onComplete?.();
     };
 
     return (
