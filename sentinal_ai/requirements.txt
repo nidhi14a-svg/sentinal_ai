@@ -8,3 +8,4 @@ python-whois>=0.8.0
 paramiko>=3.5.0
 sslyze>=6.0.0
 pytest>=8.4.0
+weasyprint>=62.0

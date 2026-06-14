@@ -45,11 +45,27 @@ class ClaudeClient:
             raise ClaudeClientError("Claude client not configured (missing API key or URL)")
 
         headers = {
-            "Authorization": f"Bearer {self.api_key}",
-            "Content-Type": "application/json",
+            "x-api-key": self.api_key,
+            "anthropic-version": "2023-06-01",
+            "content-type": "application/json",
         }
+        
+        try:
+            prompt_data = json.loads(prompt)
+            system_prompt = prompt_data.get("instruction", "You are an AI security assistant.")
+            user_content = json.dumps(prompt_data.get("payload", prompt_data), indent=2)
+        except Exception:
+            system_prompt = "You are an AI security assistant."
+            user_content = prompt
 
-        payload = {"input": prompt}
+        payload = {
+            "model": "claude-3-haiku-20240307",
+            "max_tokens": 2048,
+            "system": system_prompt,
+            "messages": [
+                {"role": "user", "content": user_content}
+            ]
+        }
 
         attempts = 0
         last_exc: Exception | None = None

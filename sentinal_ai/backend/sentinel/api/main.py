@@ -1,5 +1,8 @@
 from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
+import os
 from .routers import scan, report
 from .exceptions import ApiValidationError, TaskNotFoundError, OrchestrationError
 from ..recon.exceptions import TargetNotAllowedError
@@ -7,6 +10,20 @@ from ..scanner.exceptions import ScannerTargetNotAllowedError
 from ..remediation.exceptions import RemediationTargetNotAllowedError
 
 app = FastAPI(title="Sentinel AI Backend")
+
+# CORS — allow the frontend dev server and docker-compose origins
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",   # Vite dev server
+        "http://localhost:3000",   # docker-compose frontend
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:3000",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.exception_handler(TargetNotAllowedError)
 @app.exception_handler(ScannerTargetNotAllowedError)
@@ -40,6 +57,11 @@ def orchestration_handler(request: Request, exc: OrchestrationError):
 
 app.include_router(scan.router, prefix="/api/scan", tags=["scan"])
 app.include_router(report.router, prefix="/api/report", tags=["report"])
+
+
+reports_dir = os.path.join(os.path.dirname(__file__), "..", "..", "reports")
+os.makedirs(reports_dir, exist_ok=True)
+app.mount("/reports", StaticFiles(directory=reports_dir), name="reports")
 
 @app.get("/health")
 def health_check() -> dict[str, str]:

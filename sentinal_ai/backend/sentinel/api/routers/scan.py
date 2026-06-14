@@ -20,3 +20,8 @@ def scan_results(task_id: str, scan_service: ScanService = Depends(get_scan_serv
 @router.post("/{task_id}/fix", response_model=FixResponse)
 def fix_scan(task_id: str, payload: FixRequest, scan_service: ScanService = Depends(get_scan_service)):
     return scan_service.process_fix_action(task_id, payload)
+
+@router.get("/{task_id}/remediation-status")
+def remediation_status(task_id: str, scan_service: ScanService = Depends(get_scan_service)):
+    """Get remediation progress for a task."""
+    return scan_service.get_remediation_status(task_id)

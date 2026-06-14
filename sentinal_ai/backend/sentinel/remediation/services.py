@@ -184,7 +184,13 @@ class RemediationService(RemediationInterface):
                         "details": "Nginx preferred server ciphers added."
                     })
             else:
-                raise UnsupportedRemediationError(f"Unsupported local recommendation type: {rec_type}")
+                # Types like 'remote_command' are not applicable for local nginx
+                # remediation — skip gracefully instead of aborting the pipeline.
+                actions.append({
+                    "recommendationId": rec_id,
+                    "status": "skipped",
+                    "details": f"Recommendation type '{rec_type}' is not applicable for local remediation."
+                })
 
         if not dry_run and updated != original:
             self._write_config(config_path, updated)

@@ -3,6 +3,15 @@
 ## Overview
 This development plan is a dependency-driven roadmap for the Sentinel AI hackathon project. It is organized by role and phase to enable independent work, clear handoffs, and integrated delivery.
 
+## Note: Orchestration Consolidation (v1.1)
+
+**Update:** The standalone `backend/orchestration/` component has been consolidated into the backend API layer for architectural simplicity. 
+
+- **Old Model:** `orchestrator/` was a separate FastAPI service (port 8002) that proxied requests to other backend services.
+- **New Model:** `backend/api/services/scan_service.py` now contains all orchestration logic, coordinating task lifecycle across recon, scanner, AI analysis, and remediation modules.
+- **Impact on Plan:** Person C's Phase 2 task "Implement FastAPI orchestration skeleton" is now focused on `backend/api/` routes and `scan_service.py` instead of a separate `backend/orchestration/` folder.
+- **Result:** Simpler architecture with fewer moving parts, single API entry point, and easier frontend-backend integration.
+
 ## Person A (Security Engineer)
 
 ### Phase 1: Independent Work
