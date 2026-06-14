@@ -1,0 +1,23 @@
+[
+  {
+    "findingId": "f-101",
+    "title": "Missing Content-Security-Policy (CSP)",
+    "severity": "medium",
+    "description": "The response is missing a CSP header.",
+    "source": "ZAP"
+  },
+  {
+    "findingId": "f-102",
+    "title": "Legacy TLS Protocols Enabled",
+    "severity": "high",
+    "description": "TLSv1.0 is accepted by the server.",
+    "source": "sslyze"
+  },
+  {
+    "findingId": "f-103",
+    "title": "Server Tokens Enabled",
+    "severity": "low",
+    "description": "The web server exposes version details via server_tokens.",
+    "source": "Nikto"
+  }
+]
