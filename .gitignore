@@ -1,0 +1,66 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Python virtual environments
+venv/
+.venv/
+env/
+**/venv/
+**/.venv/
+**/env/
+
+# Build outputs
+dist/
+build/
+coverage/
+**/dist/
+**/build/
+**/coverage/
+.vite/
+
+# Python cache/build metadata
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Generated scanner/report output
+reports/
+**/reports/
+**/scanner/output/
+
+# Archives and local exports
+*.zip
+*.7z
+*.rar
+*.tar
+*.tar.gz
+
+# Logs and temp files
+logs/
+*.log
+tmp/
+temp/
+.cache/
+
+# Editors and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
