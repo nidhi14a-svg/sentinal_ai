@@ -313,55 +313,19 @@ class ScannerService(ScannerInterface):
             raise ScannerTargetNotAllowedError(f"Could not validate target allowlist: {exc}")
 
         scan_id = f"scan-{uuid.uuid4()}"
-        scanner_logs: list[str] = ["Scanning target initialized."]
+        scanner_logs: list[str] = ["Scanning target initialized. Heavy scanners (ZAP/Nikto/SSLyze) bypassed.", "Using lightweight HTTP Header Analysis."]
         raw_findings: dict[str, list[dict[str, Any]]] = {"zap": [], "nikto": [], "ssl": []}
 
-        # Run ZAP scan
-        try:
-            scanner_logs.append("zap scan started")
-            zap_res = self.run_zap_scan(target)
-            raw_findings["zap"].append(zap_res)
-            scanner_logs.append("zap scan completed")
-        except Exception as exc:
-            scanner_logs.append(f"zap scan failed: {exc}")
-            raw_findings["zap"].append({"source": "zap", "error": str(exc)})
-
-        # Run Nikto scan
-        try:
-            scanner_logs.append("nikto scan started")
-            nikto_res = self.run_nikto_scan(target)
-            raw_findings["nikto"].append(nikto_res)
-            scanner_logs.append("nikto scan completed")
-        except Exception as exc:
-            scanner_logs.append(f"nikto scan failed: {exc}")
-            raw_findings["nikto"].append({"source": "nikto", "error": str(exc)})
-
-        # Run SSL scan
-        try:
-            scanner_logs.append("sslyze scan started")
-            ssl_res = self.run_ssl_scan(target)
-            raw_findings["ssl"].append(ssl_res)
-            scanner_logs.append("sslyze scan completed")
-        except Exception as exc:
-            scanner_logs.append(f"sslyze scan failed: {exc}")
-            raw_findings["ssl"].append({"source": "ssl", "error": str(exc)})
-
-        # Aggregate raw findings into flat list for normalizer
-        flat_raw: list[dict[str, Any]] = []
-        for val in raw_findings.values():
-            flat_raw.extend(val)
-
-        normalized = normalize_raw_findings(flat_raw)
-        
-        # Merge dynamic/static target audit findings
+        # Merge dynamic/static target audit findings (HTTP header checks)
+        normalized = []
         audit_findings = self.audit_target_vulnerabilities(target)
-        start_idx = len(normalized) + 1
-        for idx, f in enumerate(audit_findings, start=start_idx):
+        for idx, f in enumerate(audit_findings, start=1):
             f["findingId"] = f"f-{idx:03d}"
             if not any(item["title"] == f["title"] for item in normalized):
                 normalized.append(f)
 
         completed_at = datetime.utcnow().isoformat() + "Z"
+        scanner_logs.append("Header Analysis completed successfully.")
 
         return {
             "scanId": scan_id,
@@ -411,26 +375,8 @@ class ScannerService(ScannerInterface):
                 {"source": "ssl", "command": f"sslyze --regular {target}:443"},
             ]
         else:
-            scanner_logs.append({"level": "info", "message": "Starting ZAP scan."})
-            try:
-                zap_output = self.run_zap_scan(target)
-                raw_findings.append(zap_output)
-            except Exception as exc:
-                raw_findings.append({"source": "zap", "error": str(exc)})
-            
-            scanner_logs.append({"level": "info", "message": "Starting Nikto scan."})
-            try:
-                nikto_output = self.run_nikto_scan(target)
-                raw_findings.append(nikto_output)
-            except Exception as exc:
-                raw_findings.append({"source": "nikto", "error": str(exc)})
-
-            scanner_logs.append({"level": "info", "message": "Starting SSL scan."})
-            try:
-                ssl_output = self.run_ssl_scan(target)
-                raw_findings.append(ssl_output)
-            except Exception as exc:
-                raw_findings.append({"source": "ssl", "error": str(exc)})
+            scanner_logs.append({"level": "info", "message": "Heavy scanners bypassed. Using lightweight HTTP Header Analysis."})
+            raw_findings = []
 
         normalized = self.normalize_findings(raw_findings)
         result = {
