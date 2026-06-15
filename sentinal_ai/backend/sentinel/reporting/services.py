@@ -38,9 +38,10 @@ class ReportingService(ReportingInterface):
         reports_dir = Path(os.getenv("REPORTS_PATH", Path(__file__).resolve().parents[3] / "reports"))
         reports_dir.mkdir(parents=True, exist_ok=True)
 
-        report_name = f"report-{task_id}.html"
-        report_path = reports_dir / report_name
-        report_url = f"http://localhost:8000/reports/{report_name}"
+        report_name = f"report-{task_id}.html"  # pyrefly: ignore
+        report_path = reports_dir / report_name  # pyrefly: ignore
+        report_url_prefix = os.getenv("REPORTS_URL_PREFIX", "http://localhost:8000/reports").rstrip("/")  # pyrefly: ignore
+        report_url = f"{report_url_prefix}/{report_name}"  # pyrefly: ignore
 
         html = self._render_report_html(
             task_id=task_id,
@@ -61,11 +62,11 @@ class ReportingService(ReportingInterface):
           # pyrefly: ignore [missing-import]
           from weasyprint import HTML
 
-          pdf_name = f"report-{task_id}.pdf"
-          pdf_path = reports_dir / pdf_name
-          HTML(string=html).write_pdf(str(pdf_path))
-          report_url = f"http://localhost:8000/reports/{pdf_name}"
-          artifact_path = str(pdf_path.resolve())
+          pdf_name = f"report-{task_id}.pdf"  # pyrefly: ignore
+          pdf_path = reports_dir / pdf_name  # pyrefly: ignore
+          HTML(string=html).write_pdf(str(pdf_path))  # pyrefly: ignore
+          report_url = f"{report_url_prefix}/{pdf_name}"  # pyrefly: ignore
+          artifact_path = str(pdf_path.resolve())  # pyrefly: ignore
         except Exception:
           # WeasyPrint not available or PDF rendering failed — fall back to HTML
           artifact_path = str(report_path.resolve())

@@ -122,7 +122,8 @@ class ScanService:
             "reconData": task["reconData"],
             "findings": task["findings"],
             "aiAnalysis": task["aiAnalysis"],
-            "reportReady": task["reportReady"]
+            "reportReady": task["reportReady"],
+            "verificationScan": task.get("verificationScan")
         }
 
     def process_fix_action(self, task_id: str, payload: Any = None, action: str = None, recommendation_id: str = None) -> dict[str, Any]:
@@ -303,7 +304,7 @@ class ScanService:
                 self._persistence.save_task(task_id, self._tasks[task_id])
 
     def orchestrate_remediation(self, task_id: str, action: str, recommendation_id: Optional[str] = None) -> None:
-        """Background thread executing the remediation steps."""
+        """Background thread executing the remediation steps, followed by a verification re-scan."""
         try:
             task = self._tasks.get(task_id)
             if not task:
@@ -311,7 +312,8 @@ class ScanService:
 
             task["status"] = "remediation"
             task["currentStep"] = "remediation"
-            task["progress"] = 90
+            task["progress"] = 70
+            self._persistence.save_task(task_id, task)
 
             # Gather recommendations
             all_recs = task.get("aiAnalysis", {}).get("recommendations", [])
@@ -343,31 +345,100 @@ class ScanService:
             task["remediationStatus"] = rem_res.get("remediationStatus") or "completed"
             task["remediationActions"] = rem_res.get("remediationActions") or []
             task["auditTrail"] = rem_res.get("auditTrail") or []
-            
-            # RE-SCAN after successful remediation to verify fixes
-            if rem_res.get("remediationStatus") != "failed" and action == "fix-all":
-                task["currentStep"] = "re_scan"
-                task["progress"] = 95
-                # Persist remediation state
+            self._persistence.save_task(task_id, task)
+
+            # ------------------------------------------------------------------
+            # POST-REMEDIATION RE-SCAN
+            # After remediation physically patches the target configuration
+            # (nginx.conf), run a fresh vulnerability audit so that the task's
+            # findings list reflects the *current* state of the target rather
+            # than the stale pre-remediation snapshot.
+            # ------------------------------------------------------------------
+            if rem_res.get("remediationStatus") != "failed":
+                task["currentStep"] = "rescan"
+                task["progress"] = 85
                 self._persistence.save_task(task_id, task)
-                
-                # Execute re-scan
-                scanner_service = ScannerService()
-                recon_data = task.get("reconData", {})
+
                 try:
-                    rescan_res = scanner_service.execute_scan(task["domain"], task["scanProfile"], recon_data)
-                    task["rescanFindings"] = rescan_res.get("normalizedFindings", [])
-                    task["rescanStatus"] = "completed"
+                    scanner_service = ScannerService()
+                    domain = task["domain"]
+
+                    # Snapshot pre-remediation findings for comparison
+                    pre_remediation_findings = list(task.get("findings") or [])
+                    pre_count = len(pre_remediation_findings)
+
+                    # Re-run the audit against the now-patched target config.
+                    # audit_target_vulnerabilities() reads nginx.conf fresh from
+                    # disk each call, so any changes made by the remediation
+                    # service are immediately reflected here.
+                    post_findings = scanner_service.audit_target_vulnerabilities(domain)
+
+                    # Re-index findingIds to avoid gaps/collisions
+                    for idx, f in enumerate(post_findings, start=1):
+                        f["findingId"] = f"f-{idx:03d}"
+                        # Preserve recommendationId linkage where title still maps
+                        matching_pre = next(
+                            (pf for pf in pre_remediation_findings if pf.get("title") == f["title"]),
+                            None,
+                        )
+                        if matching_pre:
+                            f["recommendationId"] = matching_pre.get("recommendationId")
+
+                    # Update task findings to post-remediation state
+                    task["findings"] = post_findings
+                    post_count = len(post_findings)
+
+                    # Regenerate AI analysis against the updated finding set so
+                    # recommendations stay in sync with remaining vulnerabilities
+                    if post_findings:
+                        ai_service = AIAnalysisService()
+                        domain_val = domain
+                        recon_summary = (
+                            task.get("reconData", {}).get("reconSummary")
+                            or task.get("reconData", {}).get("recon_summary")
+                            or ""
+                        )
+                        new_ai = ai_service.generate_analysis(domain_val, recon_summary, post_findings)
+                        task["aiAnalysis"] = new_ai
+
+                        # Re-map recommendation IDs back to findings
+                        new_recs = new_ai.get("recommendations", [])
+                        rec_map = {
+                            rec["findingId"]: rec["id"]
+                            for rec in new_recs
+                            if "findingId" in rec
+                        }
+                        for f in task["findings"]:
+                            f["recommendationId"] = rec_map.get(f.get("findingId"))
+                    else:
+                        # All findings resolved — clear recommendations
+                        task["aiAnalysis"] = {
+                            "analysisSummary": f"All vulnerabilities have been remediated for {domain}. Post-remediation scan returned 0 findings.",
+                            "confidenceNotes": "Post-remediation verification scan complete.",
+                            "recommendations": [],
+                        }
+
+                    # Store verification metadata on the task
+                    task["verificationScan"] = {
+                        "preRemediationCount": pre_count,
+                        "postRemediationCount": post_count,
+                        "findingsReduced": pre_count - post_count,
+                        "verifiedAt": datetime.utcnow().isoformat() + "Z",
+                    }
+
                 except Exception as rescan_exc:
-                    task["rescanStatus"] = "failed"
+                    # Re-scan failure is non-fatal: remediation still succeeded.
+                    # Record the error but do not override remediationStatus.
                     task["rescanError"] = str(rescan_exc)
-            
+                
+                self._persistence.save_task(task_id, task)
+
             # Set task status back to completed (or failed if remediation failed)
             if rem_res.get("remediationStatus") == "failed":
                 task["status"] = "failed"
             else:
                 task["status"] = "completed"
-                
+
             task["currentStep"] = None
             task["progress"] = 100
             # Persist final state

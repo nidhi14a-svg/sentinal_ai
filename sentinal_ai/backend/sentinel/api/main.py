@@ -3,6 +3,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
 from .routers import scan, report
 from .exceptions import ApiValidationError, TaskNotFoundError, OrchestrationError
 from ..recon.exceptions import TargetNotAllowedError
@@ -11,15 +16,21 @@ from ..remediation.exceptions import RemediationTargetNotAllowedError
 
 app = FastAPI(title="Sentinel AI Backend")
 
-# CORS — allow the frontend dev server and docker-compose origins
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
+# CORS — allow origins from environment or fallback to dev defaults
+allowed_origins_env = os.getenv("ALLOWED_ORIGINS")  # pyrefly: ignore
+if allowed_origins_env:
+    origins = [origin.strip() for origin in allowed_origins_env.split(",") if origin.strip()]
+else:
+    origins = [
         "http://localhost:5173",   # Vite dev server
         "http://localhost:3000",   # docker-compose frontend
         "http://127.0.0.1:5173",
         "http://127.0.0.1:3000",
-    ],
+    ]
+
+app.add_middleware(  # pyrefly: ignore
+    CORSMiddleware,  # pyrefly: ignore
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -69,3 +80,10 @@ app.mount("/reports", StaticFiles(directory=reports_dir), name="reports")
 @app.get("/health")
 def health_check() -> dict[str, str]:
     return {"status": "ok"}
+
+
+if __name__ == "__main__":
+    import uvicorn
+    host = os.getenv("FASTAPI_HOST", "0.0.0.0")  # pyrefly: ignore
+    port = int(os.getenv("FASTAPI_PORT", "8000"))  # pyrefly: ignore
+    uvicorn.run(app, host=host, port=port)  # pyrefly: ignore

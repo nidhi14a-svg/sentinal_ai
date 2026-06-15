@@ -36,6 +36,7 @@ class ScanResultsResponse(BaseModel):
     findings: List[FindingsItem]
     aiAnalysis: AIAnalysisItem
     reportReady: bool
+    verificationScan: Optional[dict] = None
 
 
 class FixRequest(BaseModel):

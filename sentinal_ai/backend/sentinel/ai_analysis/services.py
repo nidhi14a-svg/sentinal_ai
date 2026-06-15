@@ -69,7 +69,7 @@ class AIAnalysisService(AIAnalysisInterface):
             low_title = str(title).lower()
             if any(k in low_title for k in ["tls", "ssl", "legacy tls", "tlsv1"]):
                 rec_type = "tls_hardening"
-            elif any(k in low_title for k in ["content-security-policy", "csp", "x-frame", "x-content-type", "x-powered-by", "server_tokens"]):
+            elif any(k in low_title for k in ["content-security-policy", "csp", "x-frame", "x-content-type", "x-powered-by", "server_tokens", "hsts", "strict-transport-security", "referrer-policy", "header"]):
                 rec_type = "header_hardening"
             else:
                 rec_type = "remote_command"

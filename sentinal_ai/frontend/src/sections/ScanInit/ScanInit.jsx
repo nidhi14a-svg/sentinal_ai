@@ -42,9 +42,9 @@ const ScanInit = ({ onComplete }) => {
         { text: '[🔥] CRITICAL: Exposed .git/config file with credentials', status: 'error' },
         { text: '[⚠] WARNING: Sensitive log file accessible: /debug.log', status: 'warning' },
         { text: '[→] Running risk classification engine...', status: 'info' },
-        { text: '[📊] Analyzing 12 potential vulnerabilities', status: 'info' },
+        { text: '[📊] Analyzing identified potential vulnerabilities', status: 'info' },
         { text: '[📊] Calculating CVSS 3.1 severity scores', status: 'info' },
-        { text: '[✓] Scan completed — 4 critical, 3 high, 2 medium, 3 low findings', status: 'success' },
+        { text: '[✓] Scan completed and findings recorded', status: 'success' },
     ];
 
     // Step 1: Start the real scan
@@ -86,9 +86,16 @@ const ScanInit = ({ onComplete }) => {
                 // Map progress to checklist steps (0-100 -> 0-4 steps)
                 const stepIndex = Math.floor(progress / 20);
                 if (stepIndex !== activeStep && stepIndex < 5) {
+                    const newCompleted = [];
+                    for (let i = activeStep; i < stepIndex; i++) {
+                        newCompleted.push(i);
+                    }
                     const duration = (Date.now() - stepStartTimeRef.current) / 1000;
                     setStepTimings(prev => ({ ...prev, [activeStep]: duration }));
-                    setCompletedSteps(prev => [...prev, activeStep]);
+                    setCompletedSteps(prev => {
+                        const nextSteps = [...prev, ...newCompleted];
+                        return [...new Set(nextSteps)];
+                    });
                     setActiveStep(stepIndex);
                     stepStartTimeRef.current = Date.now();
                 }
@@ -143,7 +150,8 @@ const ScanInit = ({ onComplete }) => {
         if (realScanData) {
             // Count severities
             let criticalCount = 0, highCount = 0, mediumCount = 0, lowCount = 0;
-            realScanData.vulnerabilities.forEach(v => {
+            const findings = realScanData.findings || [];
+            findings.forEach(v => {
                 if (v.severity === 'CRITICAL') criticalCount++;
                 else if (v.severity === 'HIGH') highCount++;
                 else if (v.severity === 'MEDIUM') mediumCount++;
@@ -152,6 +160,7 @@ const ScanInit = ({ onComplete }) => {
             
             setScanData({
                 ...realScanData,
+                vulnerabilities: findings,
                 criticalCount,
                 highCount,
                 mediumCount,
