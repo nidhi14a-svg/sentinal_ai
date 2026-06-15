@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Brain, Zap, ArrowRight, Sparkles, Cpu, Activity, BarChart3, ShieldCheck } from 'lucide-react';
+import { Brain, Zap, ArrowRight, Sparkles, Cpu, Activity, BarChart3, ShieldCheck, Shield } from 'lucide-react';
 import { useDashboard } from '../../context/DashboardContext';
 import VulnerabilityCard from './VulnerabilityCard';
 import GlowButton from '../../components/common/GlowButton';
@@ -184,22 +184,39 @@ const AIAnalysis = ({ onProceed }) => {
                     transition={{ delay: 0.6, duration: 0.5 }}
                     className="flex flex-col items-center gap-4 pt-4 pb-8"
                 >
-                    <GlassCard glowColor="red" className="p-6 max-w-2xl w-full text-center">
-                        <div className="flex items-center justify-center gap-2 mb-3">
-                            <div className="w-1.5 h-1.5 rounded-full bg-status-success animate-pulse" />
-                            <span className="text-xs font-mono text-status-success">READY_FOR_REMEDIATION</span>
+                    <GlassCard glowColor="red" className="text-center max-w-2xl mx-auto p-12">
+                        <div className="mb-6">
+                            <div className="w-24 h-24 mx-auto rounded-full bg-gradient-to-r from-accent-red/20 to-accent-purple/20 flex items-center justify-center border-2 border-accent-red/50">
+                                <Shield className="w-12 h-12 text-accent-red" />
+                            </div>
                         </div>
-                        <p className="text-text-secondary text-sm mb-4">
-                            Autonomous remediation agent is ready to apply all recommended fixes automatically
+
+                        <h3 className="text-2xl font-bold text-text-primary mb-3">Ready to Remediate</h3>
+                        <p className="text-text-secondary mb-6">
+                            The AI agent will autonomously patch all {displayVulnerabilities.length} vulnerabilities found during the scan.
+                            No manual intervention required.
                         </p>
+
+                        <div className="flex items-center justify-center gap-4 mb-6 text-sm font-mono">
+                            <div className="flex items-center gap-2">
+                                <div className="w-2 h-2 rounded-full bg-status-success" />
+                                <span className="text-text-dim">Auto-Fixable: 100%</span>
+                            </div>
+                            <div className="w-px h-4 bg-border-subtle" />
+                            <div className="flex items-center gap-2">
+                                <div className="w-2 h-2 rounded-full bg-accent-cyan" />
+                                <span className="text-text-dim">Est. Time: 15s</span>
+                            </div>
+                        </div>
+
                         <GlowButton
                             onClick={handleRemediate}
                             variant="primary"
-                            icon={<Zap className="w-4 h-4" />}
-                            className="px-8 py-3 text-base group"
+                            icon={<Zap className="w-5 h-5" />}
+                            className="px-8 py-3 text-lg group"
                         >
-                            RUN AUTONOMOUS REMEDIATION
-                            <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
+                            FIX ALL VULNERABILITIES
+                            <Sparkles className="w-4 h-4 ml-2 group-hover:rotate-12 transition-transform duration-300" />
                         </GlowButton>
                     </GlassCard>
 

@@ -112,7 +112,8 @@ const ScanInit = ({ onComplete }) => {
                     // Mark final step
                     const finalDuration = (Date.now() - stepStartTimeRef.current) / 1000;
                     setStepTimings(prev => ({ ...prev, [activeStep]: finalDuration }));
-                    setCompletedSteps(prev => [...prev, activeStep]);
+                    setCompletedSteps([0, 1, 2, 3, 4]);
+                    setActiveStep(5);
                     setScanProgress(100);
                     
                     setTimeout(() => setTerminalComplete(true), 1000);

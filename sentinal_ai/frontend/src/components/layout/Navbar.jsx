@@ -8,7 +8,6 @@ const stages = [
   { key: 'threatDashboard', label: 'Threats' },
   { key: 'aiAnalysis', label: 'AI Analysis' },
   { key: 'remediation', label: 'Remediation' },
-  { key: 'verification', label: 'Verification' },
   { key: 'forensicReport', label: 'Report' },
 ];
 
@@ -17,8 +16,8 @@ const Navbar = ({ currentSection, onNavigate, completedSections = ['landing'] })
   const activeIdx = currentIdx === -1 ? 0 : currentIdx;
   const progressPercent = (activeIdx / (stages.length - 1)) * 100;
 
-  // Determine if the indicator should be dimmed (e.g. on landing or futureVision)
-  const isOffFlow = currentSection === 'landing' || currentSection === 'futureVision';
+  // Determine if the indicator should be dimmed (e.g. on landing)
+  const isOffFlow = currentSection === 'landing';
 
   return (
     <motion.header
@@ -106,7 +105,7 @@ const Navbar = ({ currentSection, onNavigate, completedSections = ['landing'] })
           })}
         </div>
 
-        {/* Right Side: Future Vision & Status */}
+        {/* Right Side: Status */}
         <div className="flex items-center gap-3">
           
           {/* System Online Status */}
@@ -114,21 +113,6 @@ const Navbar = ({ currentSection, onNavigate, completedSections = ['landing'] })
             <span className="w-1.5 h-1.5 rounded-full bg-status-success animate-pulse" />
             <span className="text-[9px] font-mono text-text-dim tracking-wider select-none">SYSTEM ONLINE</span>
           </div>
-
-          {/* Future Vision Button */}
-          <button
-            onClick={() => onNavigate('futureVision')}
-            className={`
-              relative flex items-center gap-1.5 px-3 py-1.5 rounded-lg border font-mono text-2xs tracking-wider font-bold transition-all duration-300 cursor-pointer
-              ${currentSection === 'futureVision'
-                ? 'bg-accent-purple text-white border-accent-purple shadow-glowPurple'
-                : 'bg-bg-panel border-accent-purple/30 text-accent-purple hover:bg-accent-purple/10 hover:border-accent-purple'
-              }
-            `}
-          >
-            <Sparkles className="w-3 h-3" />
-            <span>FUTURE VISION</span>
-          </button>
         </div>
 
       </div>

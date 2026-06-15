@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDashboard, sections } from './context/DashboardContext';
-import { Shield, Home, Activity, Brain, Wrench, CheckCircle, FileText, Cpu } from 'lucide-react';
+import { Shield, Home, Activity, Brain, Wrench, CheckCircle, FileText, Cpu, Menu, X } from 'lucide-react';
 
 // Import Entry Screen
 import EntryScreen from './components/EntryScreen';
@@ -12,9 +12,7 @@ import ScanInit from './sections/ScanInit/ScanInit';
 import ThreatDashboard from './sections/ThreatDashboard/ThreatDashboard';
 import AIAnalysis from './sections/AIAnalysis/AIAnalysis';
 import Remediation from './sections/Remediation/Remediation';
-import Verification from './sections/Verification/Verification';
 import ForensicReport from './sections/ForensicReport/ForensicReport';
-import FutureVision from './sections/FutureVision/FutureVision';
 
 // Page transition variants
 const pageVariants = {
@@ -71,10 +69,6 @@ function App() {
 
   const handleRemediationProceed = () => {
     markRemediationComplete();
-    goToSection(sections.VERIFICATION);
-  };
-
-  const handleVerificationProceed = () => {
     goToSection(sections.FORENSIC_REPORT);
   };
 
@@ -97,12 +91,8 @@ function App() {
         return <AIAnalysis onProceed={handleAIAnalysisProceed} />;
       case sections.REMEDIATION:
         return <Remediation onProceed={handleRemediationProceed} />;
-      case sections.VERIFICATION:
-        return <Verification onProceed={handleVerificationProceed} />;
       case sections.FORENSIC_REPORT:
         return <ForensicReport />;
-      case sections.FUTURE_VISION:
-        return <FutureVision />;
       default:
         return <Landing onBegin={handleLandingBegin} />;
     }
@@ -112,47 +102,75 @@ function App() {
   const DevNav = () => {
     if (process.env.NODE_ENV !== 'development') return null;
 
+    const [isOpen, setIsOpen] = useState(false);
+
     const navItems = [
       { name: 'Landing', section: sections.LANDING, icon: Home },
       { name: 'Scan', section: sections.SCAN_INIT, icon: Activity },
       { name: 'Threats', section: sections.THREAT_DASHBOARD, icon: Shield },
       { name: 'AI', section: sections.AI_ANALYSIS, icon: Brain },
       { name: 'Remediation', section: sections.REMEDIATION, icon: Wrench },
-      { name: 'Verify', section: sections.VERIFICATION, icon: CheckCircle },
       { name: 'Report', section: sections.FORENSIC_REPORT, icon: FileText },
-      { name: 'Future', section: sections.FUTURE_VISION, icon: Cpu },
     ];
 
     return (
-      <div className="fixed bottom-4 right-4 z-50">
-        <div className="glass-panel p-2 rounded-xl border border-accent-red/30 backdrop-blur-lg opacity-40 hover:opacity-100 transition-all duration-300">
-          <div className="text-[8px] font-mono text-accent-red mb-1 text-center">DEV_NAV</div>
-          <div className="flex flex-wrap gap-1 justify-end">
-            {navItems.map((item) => (
-              <button
-                key={item.section}
-                onClick={() => goToSection(item.section)}
-                className={`
-                  px-1.5 py-0.5 rounded text-[8px] font-mono transition-all duration-200
-                  flex items-center gap-0.5
-                  ${currentSection === item.section
-                    ? 'bg-accent-red text-white shadow-glowRed'
-                    : 'bg-bg-secondary/50 text-text-dim hover:bg-accent-red/20 hover:text-accent-red'
-                  }
-                `}
-              >
-                <item.icon className="w-2 h-2" />
-                {item.name}
-              </button>
-            ))}
-            <button
-              onClick={resetApp}
-              className="px-1.5 py-0.5 rounded text-[8px] font-mono bg-accent-purple/20 text-accent-purple hover:bg-accent-purple/40 transition-all duration-200"
+      <div className="fixed top-4 left-4 z-[100]">
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className={`p-3 rounded-xl border transition-all duration-300 shadow-glowCyan backdrop-blur-md flex items-center justify-center
+            ${isOpen 
+              ? 'bg-accent-cyan/20 border-accent-cyan text-white shadow-[0_0_15px_rgba(0,229,255,0.4)]' 
+              : 'bg-bg-panel/90 border-accent-cyan/50 text-accent-cyan hover:bg-accent-cyan/20 hover:border-accent-cyan hover:text-white'}
+          `}
+          aria-label="Navigation Menu"
+        >
+          {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+        </button>
+
+        <AnimatePresence>
+          {isOpen && (
+            <motion.div
+              initial={{ opacity: 0, x: -20, scale: 0.95 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              exit={{ opacity: 0, x: -20, scale: 0.95 }}
+              transition={{ duration: 0.2 }}
+              className="absolute top-16 left-0 w-56 p-3 rounded-xl border border-accent-cyan/50 bg-bg-panel/95 backdrop-blur-xl shadow-[0_0_25px_rgba(0,229,255,0.2)] flex flex-col gap-2"
             >
-              Reset
-            </button>
-          </div>
-        </div>
+              <div className="text-[11px] font-mono text-accent-cyan mb-2 font-bold uppercase tracking-wider border-b border-accent-cyan/20 pb-2">
+                System Navigation
+              </div>
+              {navItems.map((item) => (
+                <button
+                  key={item.section}
+                  onClick={() => {
+                    goToSection(item.section);
+                    setIsOpen(false);
+                  }}
+                  className={`
+                    w-full px-3 py-2.5 rounded-lg text-sm font-mono transition-all duration-200
+                    flex items-center gap-3 border
+                    ${currentSection === item.section
+                      ? 'bg-accent-cyan/20 text-accent-cyan border-accent-cyan/50 shadow-[0_0_10px_rgba(0,229,255,0.2)]'
+                      : 'bg-transparent text-text-primary border-transparent hover:bg-bg-secondary hover:text-accent-cyan hover:border-accent-cyan/30'
+                    }
+                  `}
+                >
+                  <item.icon className="w-4 h-4" />
+                  {item.name}
+                </button>
+              ))}
+              <button
+                onClick={() => {
+                  resetApp();
+                  setIsOpen(false);
+                }}
+                className="w-full mt-2 px-3 py-2.5 rounded-lg text-sm font-mono bg-accent-red/10 text-accent-red border border-accent-red/30 hover:bg-accent-red/20 hover:shadow-[0_0_10px_rgba(255,26,60,0.2)] transition-all duration-200 flex items-center justify-center gap-2"
+              >
+                Reset Application
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     );
   };

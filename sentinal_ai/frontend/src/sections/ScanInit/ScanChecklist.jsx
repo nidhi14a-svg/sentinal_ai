@@ -233,7 +233,7 @@ const ScanChecklist = ({ activeStep, completedSteps, stepTimings }) => {
                             <div className="w-px h-3 bg-border-subtle" />
                             <div className="flex items-center gap-2">
                                 <div className="w-1.5 h-1.5 rounded-full bg-accent-cyan animate-pulse" />
-                                <span className="text-text-dim">ACTIVE: {activeStep + 1}</span>
+                                <span className="text-text-dim">ACTIVE: {activeStep >= 5 ? 'NONE' : activeStep + 1}</span>
                             </div>
                         </div>
                         <div className="text-text-dim">

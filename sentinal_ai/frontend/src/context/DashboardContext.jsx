@@ -51,9 +51,7 @@ export const sections = {
   THREAT_DASHBOARD: 'threatDashboard',
   AI_ANALYSIS: 'aiAnalysis',
   REMEDIATION: 'remediation',
-  VERIFICATION: 'verification',
   FORENSIC_REPORT: 'forensicReport',
-  FUTURE_VISION: 'futureVision',
 };
 
 const DashboardContext = createContext(null);

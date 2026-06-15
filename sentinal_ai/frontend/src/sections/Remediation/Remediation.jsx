@@ -10,7 +10,7 @@ import ProgressLine from '../../components/common/ProgressLine';
 
 const Remediation = ({ onProceed }) => {
     const { remediationStatus, setVerificationData, scanData, targetDomain, setReportData, taskId } = useDashboard();
-    const [isActive, setIsActive] = useState(false);
+    const [isActive, setIsActive] = useState(true);
     const [currentStep, setCurrentStep] = useState(1);
     const [completedSteps, setCompletedSteps] = useState([]);
     const [stepDetails, setStepDetails] = useState({});
@@ -53,6 +53,14 @@ const Remediation = ({ onProceed }) => {
             console.error("Remediation failed:", error);
         }
     };
+
+    // Auto-start remediation to skip the "Ready to Remediate" screen
+    useEffect(() => {
+        if (taskId) {
+            startRemediation();
+        }
+    }, [taskId]);
+
 
     useEffect(() => {
         if (!isPolling || !taskId) return;
@@ -342,7 +350,7 @@ const Remediation = ({ onProceed }) => {
                                         icon={<CheckCircle className="w-4 h-4" />}
                                         className="px-8 py-3 text-base group"
                                     >
-                                        VIEW VERIFICATION RESULTS
+                                        VIEW REPORT
                                         <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
                                     </GlowButton>
                                 </motion.div>

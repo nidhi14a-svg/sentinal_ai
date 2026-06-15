@@ -174,7 +174,7 @@ class ScannerService(ScannerInterface):
                 x_content_type_missing = False
 
         # Static fallback/supplemental checks
-        is_mock_target = domain in ["localhost", "127.0.0.1", "example.team-owned-site.com"]
+        is_mock_target = domain in ["localhost", "127.0.0.1", "example.team-owned-site.com", "sentinel-vulnerable-target.onrender.com"]
         if nginx_content and is_mock_target:
             # Override dynamic HTTP values with actual configuration on disk
             x_powered_by_active = "add_header X-Powered-By" in nginx_content
